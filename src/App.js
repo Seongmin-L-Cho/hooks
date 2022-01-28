@@ -1,18 +1,35 @@
 import React, { useState } from "react";
 
-const useInput = () => {};
+const useInput = (initialValue, validator) => {
+  const [value, setValue] = useState(initialValue);
+  const onChange = (e) => {
+    const {
+      target: { value },
+    } = e;
+
+    let willUpdate = true;
+    if (typeof validator === "function") {
+      willUpdate = validator(value);
+    }
+    if (willUpdate) {
+      setValue(value);
+    }
+
+    console.log(e.value);
+  };
+
+  return { value, onChange };
+};
 
 const App = () => {
-  const [item, setItem] = useState(1);
-  const incrementItem = () => setItem(item + 1);
-  const decrementItem = () => setItem(item - 1);
-
+  const maxLen = (value) => {
+    return value.length < 10;
+  };
+  const name = useInput("Mr.", maxLen);
   return (
     <div className="App">
-      <h1>Hello {item}</h1>
-      <h2>Start editing to see some magic happen!</h2>
-      <button onClick={incrementItem}>increase</button>
-      <button onClick={decrementItem}>decrease</button>
+      <h1>Hello </h1>
+      <input placeholder="name" {...name}></input>
     </div>
   );
 };
