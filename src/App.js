@@ -1,32 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const useClick = (onClick) => {
-  const element = useRef();
-  console.log(onClick);
-  useEffect(() => {
-    console.log("useEffect");
-    if (element.current) {
-      console.log(element.current);
-      element.current.addEventListener("click", onClick);
+const useConfirm = (message = "", onConfirm, onCancel) => {
+  if (onConfirm && typeof onConfirm !== "function") {
+    return;
+  }
+
+  if (onCancel && typeof onCancel !== "function") {
+    return;
+  }
+
+  const confirmAction = () => {
+    if (window.confirm(message)) {
+      onConfirm();
+    } else {
+      onCancel();
     }
-    return () => {
-      if (element.current) {
-        console.log("fuck");
-        element.current.removeEventListener("click", onClick);
-      }
-    };
-  }, []);
-  console.log(typeof onClick);
-  console.log(element);
-  return element;
+  };
+
+  return confirmAction;
 };
 
 const App = () => {
-  const sayHello = () => console.log("hahahah");
-  const title = useClick(sayHello);
+  const deleteWorld = () => console.log("delete w");
+  const confirmDelete = useConfirm("areyousure", deleteWorld);
   return (
     <div className="App">
-      <div ref={title}> hi</div>
+      <button onClick={confirmDelete}> hi</button>
     </div>
   );
 };
