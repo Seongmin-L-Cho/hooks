@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const useBeforeLeave = (onBefore) => {
-  const handle = (e) => {
-    const { clientY } = e;
-    if (clientY <= 0) {
-      onBefore();
-    }
+  const handle = () => {
+    console.log("leaving");
   };
 
   useEffect(() => {
@@ -16,9 +13,11 @@ const useBeforeLeave = (onBefore) => {
       return () => document.removeEventListener("mouseleave", handle);
     }
   }, []);
+
+  return;
 };
 
-const App = () => {
+const beforeLeave = () => {
   const begForLife = () => console.log("check");
   useBeforeLeave(begForLife);
   return (
@@ -28,4 +27,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default beforeLeave;
