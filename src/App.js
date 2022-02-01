@@ -1,24 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const useScroll = (onChange) => {
-  const [state, setState] = useState({ x: 0, y: 0 });
-  const onScroll = () => {
-    setState({ y: window.scrollY, x: window.scrollX });
+const useFullScreen = (callback) => {
+  const element = useRef();
+  const triggerFullScreen = () => {
+    console.log(callback);
+    console.log(typeof callback);
+    if (element.current) {
+      element.current.requestFullscreen();
+      if (callback && typeof callback === "function") {
+        callback(true);
+      }
+    }
   };
-  useEffect(() => {
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return state;
+  const exitFullscreen = () => {
+    document.exitFullscreen();
+    if (callback && typeof callback === "function") {
+      callback(false);
+    }
+  };
+
+  return { element, triggerFullScreen, exitFullscreen };
 };
 
 const App = () => {
-  const { y } = useScroll();
+  const onFullScreen = (isFull) => {
+    console.log(isFull ? "full" : "notfull");
+  };
+  const { element, triggerFullScreen, exitFullscreen } =
+    useFullScreen(onFullScreen);
   return (
     <div className="App" style={{ height: "1000vh" }}>
-      <h1 style={{ position: "fixed", color: y > 100 ? "red" : "blue" }}>
-        hello
-      </h1>
+      <div ref={element}>
+        <img src="http://image.chosun.com/sitedata/image/201808/10/2018081001569_0.jpg" />
+      </div>
+      <button onClick={triggerFullScreen}>Make fullscreen</button>
+      <button onClick={exitFullscreen}>exit fullscreen</button>
     </div>
   );
 };
