@@ -1,26 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const useFadeIn = (duration = 1, delay = 0) => {
-  const element = useRef();
-
-  useEffect(() => {
-    if (element.current) {
-      const { current } = element;
-      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
-      current.style.opacity = 1;
+const useNetwork = (onChange) => {
+  const [status, setStatus] = useState(navigator.onLine);
+  const handleChange = () => {
+    if (typeof onChange === "function") {
+      onChange(navigator.onLine);
     }
+    setStatus(navigator.onLine);
+  };
+  useEffect(() => {
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+    return () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
   }, []);
 
-  return { ref: element, style: { opacity: 0 } };
+  return status;
 };
 
 const App = () => {
-  const el1 = useFadeIn(1, 2);
-  const el2 = useFadeIn(3, 5);
+  const handleNetworkChange = (online) => {
+    console.log(online ? "we are online" : "offLine");
+  };
+  const onLine = useNetwork(handleNetworkChange);
   return (
     <div className="App">
-      <h1 {...el1}>hello</h1>
-      <h1 {...el2}>gogogoogogogo</h1>
+      <h1>{onLine ? "on" : "off"}</h1>
     </div>
   );
 };
