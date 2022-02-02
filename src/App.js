@@ -1,40 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const useFullScreen = (callback) => {
-  const element = useRef();
-  const triggerFullScreen = () => {
-    console.log(callback);
-    console.log(typeof callback);
-    if (element.current) {
-      element.current.requestFullscreen();
-      if (callback && typeof callback === "function") {
-        callback(true);
-      }
-    }
-  };
-  const exitFullscreen = () => {
-    document.exitFullscreen();
-    if (callback && typeof callback === "function") {
-      callback(false);
+const useNotification = (title, option) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNoti = () => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, option);
+        } else {
+          return;
+        }
+      });
+    } else {
+      new Notification(title, option);
     }
   };
 
-  return { element, triggerFullScreen, exitFullscreen };
+  return fireNoti;
 };
 
 const App = () => {
-  const onFullScreen = (isFull) => {
-    console.log(isFull ? "full" : "notfull");
-  };
-  const { element, triggerFullScreen, exitFullscreen } =
-    useFullScreen(onFullScreen);
+  const triggerNoti = useNotification("hahahah", { body: "Do I know you?" });
   return (
     <div className="App" style={{ height: "1000vh" }}>
-      <div ref={element}>
-        <img src="http://image.chosun.com/sitedata/image/201808/10/2018081001569_0.jpg" />
-      </div>
-      <button onClick={triggerFullScreen}>Make fullscreen</button>
-      <button onClick={exitFullscreen}>exit fullscreen</button>
+      <button onClick={triggerNoti}>NotiButton</button>
     </div>
   );
 };
