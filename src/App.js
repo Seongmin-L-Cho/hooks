@@ -1,31 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-
-const useNotification = (title, option) => {
-  if (!("Notification" in window)) {
-    return;
-  }
-  const fireNoti = () => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, option);
-        } else {
-          return;
-        }
-      });
-    } else {
-      new Notification(title, option);
-    }
-  };
-
-  return fireNoti;
-};
+import useAxios from "./useAxios";
 
 const App = () => {
-  const triggerNoti = useNotification("hahahah", { body: "Do I know you?" });
+  const { loading, data, error, refetch } = useAxios({
+    url: "temp",
+  });
+
   return (
     <div className="App" style={{ height: "1000vh" }}>
-      <button onClick={triggerNoti}>NotiButton</button>
+      <h1>{data ? data.status : "nodata"}</h1>
+      <h2>{loading ? "loading" : "notloading"}</h2>
+      <button onClick={refetch}>refetch</button>
     </div>
   );
 };
